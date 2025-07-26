@@ -1,0 +1,12 @@
+[
+  {
+    "modid": "fluidinteractions",
+    "name": "Fluid Interactions",
+    "description": "Solid functionality for liquid states!",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "https://github.com/ACGaming/FluidInteractions",
+    "authorList": ["ACGaming"],
+    "credits": "Ski_ for commissioning"
+  }
+]
