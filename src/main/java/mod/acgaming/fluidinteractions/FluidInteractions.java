@@ -162,8 +162,8 @@ public class FluidInteractions
         float sinYaw = (float) Math.sin(-yaw * 0.017453292F - (float) Math.PI);
         float cosPitch = (float) -Math.cos(-pitch * 0.017453292F);
         float sinPitch = (float) Math.sin(-pitch * 0.017453292F);
-        float range = 5.0F;
-        Vec3d end = start.add((double) (sinYaw * cosPitch) * range, (double) sinPitch * range, (double) (cosYaw * cosPitch) * range);
+        double range = FIConfig.interactionDistance;
+        Vec3d end = start.add(sinYaw * cosPitch * range, sinPitch * range, cosYaw * cosPitch * range);
 
         return world.rayTraceBlocks(start, end, true, false, true);
     }

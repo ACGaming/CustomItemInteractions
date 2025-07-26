@@ -20,6 +20,10 @@ public class FIConfig
         })
     public static String[] fluidInteractions = new String[] {};
 
+    @Config.Name("Interaction Distance")
+    @Config.Comment("The maximum distance in blocks a fluid can be interacted with")
+    public static double interactionDistance = 5.0D;
+
     @Mod.EventBusSubscriber(modid = FluidInteractions.MOD_ID)
     public static class EventHandler
     {
