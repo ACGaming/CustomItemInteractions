@@ -11,10 +11,12 @@ import net.minecraft.world.World;
 public class FICommandSender implements ICommandSender
 {
     private final EntityPlayer player;
+    private final BlockPos targetPos;
 
-    public FICommandSender(EntityPlayer player)
+    public FICommandSender(EntityPlayer player, BlockPos targetPos)
     {
         this.player = player;
+        this.targetPos = targetPos;
     }
 
     @Override
@@ -38,7 +40,7 @@ public class FICommandSender implements ICommandSender
     @Override
     public Vec3d getPositionVector()
     {
-        return player.getPositionVector();
+        return new Vec3d(targetPos.getX() + 0.5D, targetPos.getY(), targetPos.getZ() + 0.5D);
     }
 
     @Override

@@ -84,7 +84,7 @@ public class FluidInteractions
                 }
 
                 // Execute commands
-                ICommandSender commandSender = new FICommandSender(player);
+                ICommandSender commandSender = new FICommandSender(player, rayTrace.getBlockPos());
                 for (String command : config.commands)
                 {
                     if (!command.isEmpty())
