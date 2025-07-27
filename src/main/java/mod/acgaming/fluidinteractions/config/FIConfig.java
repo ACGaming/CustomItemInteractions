@@ -24,6 +24,14 @@ public class FIConfig
     @Config.Comment("The maximum distance in blocks a fluid can be interacted with")
     public static double interactionDistance = 5.0D;
 
+    @Config.Name("Item Use Interactions")
+    @Config.Comment
+        ({
+            "Syntax: itemConsumed,itemReplacing[,command1;command2...]",
+            "Example: minecraft:cooked_chicken,minecraft:bone,playsound entity.skeleton.step player @p"
+        })
+    public static String[] itemUseInteractions = new String[] {};
+
     @Mod.EventBusSubscriber(modid = FluidInteractions.MOD_ID)
     public static class EventHandler
     {
@@ -50,6 +58,20 @@ public class FIConfig
             this.fluid = fluid;
             this.inputItem = inputItem;
             this.outputItem = outputItem;
+            this.commands = commands;
+        }
+    }
+
+    public static class ItemUseInteractionConfig
+    {
+        public String itemConsumed;
+        public String itemReplacing;
+        public String[] commands;
+
+        public ItemUseInteractionConfig(String itemConsumed, String itemReplacing, String[] commands)
+        {
+            this.itemConsumed = itemConsumed;
+            this.itemReplacing = itemReplacing;
             this.commands = commands;
         }
     }

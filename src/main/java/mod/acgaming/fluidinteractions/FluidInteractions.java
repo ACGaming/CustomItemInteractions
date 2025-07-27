@@ -14,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -36,7 +37,8 @@ public class FluidInteractions
     public static final String VERSION = Tags.VERSION;
     public static final String ACCEPTED_VERSIONS = "[1.12.2]";
     public static final Logger LOGGER = LogManager.getLogger(NAME);
-    private static final Map<String, FIConfig.FluidInteractionConfig> interConfigs = new HashMap<>();
+    private static final Map<String, FIConfig.FluidInteractionConfig> fluidConfigs = new HashMap<>();
+    private static final Map<String, FIConfig.ItemUseInteractionConfig> useConfigs = new HashMap<>();
 
     @SubscribeEvent
     public static void onRightClickItem(PlayerInteractEvent.RightClickItem event)
@@ -57,15 +59,15 @@ public class FluidInteractions
 
         // Check for applicable fluid interaction config
         String key = fluid.getName() + "_" + heldItem.getItem().getRegistryName();
-        FIConfig.FluidInteractionConfig config = interConfigs.get(key);
+        FIConfig.FluidInteractionConfig config = fluidConfigs.get(key);
 
         if (config != null)
         {
             // Get output item
+            EntityPlayer player = event.getEntityPlayer();
             Item outputItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(config.outputItem));
             if (outputItem != null)
             {
-                EntityPlayer player = event.getEntityPlayer();
                 ItemStack outputStack = new ItemStack(outputItem, 1);
 
                 // Replace multiple items
@@ -82,25 +84,79 @@ public class FluidInteractions
                 {
                     player.setHeldItem(event.getHand(), outputStack);
                 }
+            }
 
-                // Execute commands
-                ICommandSender commandSender = new FICommandSender(player, rayTrace.getBlockPos());
-                for (String command : config.commands)
+            // Execute commands
+            ICommandSender commandSender = new FICommandSender(player, rayTrace.getBlockPos());
+            for (String command : config.commands)
+            {
+                if (!command.isEmpty())
                 {
-                    if (!command.isEmpty())
+                    event.getWorld().getMinecraftServer().getCommandManager().executeCommand(commandSender, command);
+                }
+            }
+
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onUseItem(LivingEntityUseItemEvent.Finish event)
+    {
+        if (event.getEntity().getEntityWorld().isRemote || event.getEntity().getServer() == null || !(event.getEntity() instanceof EntityPlayer)) return;
+
+        EntityPlayer player = (EntityPlayer) event.getEntity();
+        ItemStack consumedItem = event.getItem();
+        if (consumedItem.isEmpty()) return;
+
+        // Check for applicable item use interaction config
+        String key = consumedItem.getItem().getRegistryName().toString();
+        FIConfig.ItemUseInteractionConfig config = useConfigs.get(key);
+
+        if (config != null)
+        {
+            // Get replacement item
+            Item replacementItem = ForgeRegistries.ITEMS.getValue(new ResourceLocation(config.itemReplacing));
+            if (replacementItem != null)
+            {
+                ItemStack replacementStack = new ItemStack(replacementItem, 1);
+
+                // Replace multiple items
+                if (consumedItem.getCount() > 1)
+                {
+                    consumedItem.shrink(1);
+                    event.setResultStack(consumedItem);
+
+                    if (!player.inventory.addItemStackToInventory(replacementStack))
                     {
-                        event.getWorld().getMinecraftServer().getCommandManager().executeCommand(commandSender, command);
+                        player.dropItem(replacementStack, false);
                     }
                 }
+                // Replace single item
+                else
+                {
+                    event.setResultStack(replacementStack);
+                }
+            }
 
-                event.setCanceled(true);
+            // Execute commands
+            ICommandSender commandSender = new FICommandSender(player, player.getPosition());
+            for (String command : config.commands)
+            {
+                if (!command.isEmpty())
+                {
+                    player.getServer().getCommandManager().executeCommand(commandSender, command);
+                }
             }
         }
     }
 
     public static void loadConfigs()
     {
-        interConfigs.clear();
+        fluidConfigs.clear();
+        useConfigs.clear();
+
+        // Load fluid interactions
         for (String key : FIConfig.fluidInteractions)
         {
             String[] parts = key.split(",");
@@ -114,7 +170,7 @@ public class FluidInteractions
                 Fluid fluid = FluidRegistry.getFluid(fluidName);
                 if (fluid != null)
                 {
-                    interConfigs.put(fluidName + "_" + inputItem, new FIConfig.FluidInteractionConfig(fluid, inputItem, outputItem, commands));
+                    fluidConfigs.put(fluidName + "_" + inputItem, new FIConfig.FluidInteractionConfig(fluid, inputItem, outputItem, commands));
                 }
                 else
                 {
@@ -122,7 +178,30 @@ public class FluidInteractions
                 }
             }
         }
-        LOGGER.info("Loaded {} fluid interaction(s)", interConfigs.size());
+        LOGGER.info("Loaded {} fluid interaction(s)", fluidConfigs.size());
+
+        // Load item use interactions
+        for (String key : FIConfig.itemUseInteractions)
+        {
+            String[] parts = key.split(",");
+            if (parts.length >= 2)
+            {
+                String itemConsumed = parts[0].trim();
+                String itemReplacing = parts[1].trim();
+                String[] commands = parts.length > 2 ? parts[2].split(";") : new String[0];
+
+                Item consumed = ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemConsumed));
+                if (consumed != null)
+                {
+                    useConfigs.put(itemConsumed, new FIConfig.ItemUseInteractionConfig(itemConsumed, itemReplacing, commands));
+                }
+                else
+                {
+                    LOGGER.warn("Invalid consumed item: {}", itemConsumed);
+                }
+            }
+        }
+        LOGGER.info("Loaded {} item use interaction(s)", useConfigs.size());
     }
 
     private static Fluid getFluidFromBlock(World world, BlockPos pos)
