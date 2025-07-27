@@ -20,7 +20,7 @@ public class CIIConfig
         })
     public static String[] fluidInteractions = new String[] {};
 
-    @Config.Name("Interaction Distance")
+    @Config.Name("Fluid Interaction Distance")
     @Config.Comment("The maximum distance in blocks a fluid can be interacted with")
     public static double interactionDistance = 5.0D;
 
