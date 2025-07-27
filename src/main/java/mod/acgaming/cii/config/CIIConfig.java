@@ -16,7 +16,7 @@ public class CIIConfig
     @Config.Comment
         ({
             "Syntax: fluid,input_item,output_item[,command1;command2;command3...]",
-            "Example: water,minecraft:book,minecraft:paper,playsound minecraft:block.cloth.break player @p"
+            "Example: water,minecraft:book,minecraft:paper,playsound block.cloth.break player @p"
         })
     public static String[] fluidInteractions = new String[] {};
 
