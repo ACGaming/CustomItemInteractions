@@ -1,4 +1,4 @@
-package mod.acgaming.fluidinteractions.config;
+package mod.acgaming.cii.config;
 
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
@@ -7,10 +7,10 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import mod.acgaming.fluidinteractions.FluidInteractions;
+import mod.acgaming.cii.CustomItemInteractions;
 
-@Config(modid = FluidInteractions.MOD_ID)
-public class FIConfig
+@Config(modid = CustomItemInteractions.MOD_ID, name = "CustomItemInteractions")
+public class CIIConfig
 {
     @Config.Name("Fluid Interactions")
     @Config.Comment
@@ -27,21 +27,21 @@ public class FIConfig
     @Config.Name("Item Use Interactions")
     @Config.Comment
         ({
-            "Syntax: itemConsumed,itemReplacing[,command1;command2...]",
+            "Syntax: input_item,output_item[,command1;command2;command3...]",
             "Example: minecraft:cooked_chicken,minecraft:bone,playsound entity.skeleton.step player @p"
         })
     public static String[] itemUseInteractions = new String[] {};
 
-    @Mod.EventBusSubscriber(modid = FluidInteractions.MOD_ID)
+    @Mod.EventBusSubscriber(modid = CustomItemInteractions.MOD_ID)
     public static class EventHandler
     {
         @SubscribeEvent
         public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event)
         {
-            if (event.getModID().equals(FluidInteractions.MOD_ID))
+            if (event.getModID().equals(CustomItemInteractions.MOD_ID))
             {
-                ConfigManager.sync(FluidInteractions.MOD_ID, Config.Type.INSTANCE);
-                FluidInteractions.loadConfigs();
+                ConfigManager.sync(CustomItemInteractions.MOD_ID, Config.Type.INSTANCE);
+                CustomItemInteractions.loadConfigs();
             }
         }
     }

@@ -1,4 +1,4 @@
-package mod.acgaming.fluidinteractions;
+package mod.acgaming.cii;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,20 +25,20 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import java.util.HashMap;
 import java.util.Map;
-import mod.acgaming.fluidinteractions.config.FIConfig;
-import mod.acgaming.fluidinteractions.util.FICommandSender;
+import mod.acgaming.cii.config.CIIConfig;
+import mod.acgaming.cii.util.CIICommandSender;
 
-@Mod.EventBusSubscriber(modid = FluidInteractions.MOD_ID)
-@Mod(modid = FluidInteractions.MOD_ID, name = FluidInteractions.NAME, version = FluidInteractions.VERSION, acceptedMinecraftVersions = FluidInteractions.ACCEPTED_VERSIONS)
-public class FluidInteractions
+@Mod.EventBusSubscriber(modid = CustomItemInteractions.MOD_ID)
+@Mod(modid = CustomItemInteractions.MOD_ID, name = CustomItemInteractions.NAME, version = CustomItemInteractions.VERSION, acceptedMinecraftVersions = CustomItemInteractions.ACCEPTED_VERSIONS)
+public class CustomItemInteractions
 {
     public static final String MOD_ID = Tags.MOD_ID;
     public static final String NAME = Tags.NAME;
     public static final String VERSION = Tags.VERSION;
     public static final String ACCEPTED_VERSIONS = "[1.12.2]";
     public static final Logger LOGGER = LogManager.getLogger(NAME);
-    private static final Map<String, FIConfig.FluidInteractionConfig> fluidConfigs = new HashMap<>();
-    private static final Map<String, FIConfig.ItemUseInteractionConfig> useConfigs = new HashMap<>();
+    private static final Map<String, CIIConfig.FluidInteractionConfig> fluidConfigs = new HashMap<>();
+    private static final Map<String, CIIConfig.ItemUseInteractionConfig> useConfigs = new HashMap<>();
 
     @SubscribeEvent
     public static void onRightClickItem(PlayerInteractEvent.RightClickItem event)
@@ -59,7 +59,7 @@ public class FluidInteractions
 
         // Check for applicable fluid interaction config
         String key = fluid.getName() + "_" + heldItem.getItem().getRegistryName();
-        FIConfig.FluidInteractionConfig config = fluidConfigs.get(key);
+        CIIConfig.FluidInteractionConfig config = fluidConfigs.get(key);
 
         if (config != null)
         {
@@ -87,7 +87,7 @@ public class FluidInteractions
             }
 
             // Execute commands
-            ICommandSender commandSender = new FICommandSender(player, rayTrace.getBlockPos());
+            ICommandSender commandSender = new CIICommandSender(player, rayTrace.getBlockPos());
             for (String command : config.commands)
             {
                 if (!command.isEmpty())
@@ -111,7 +111,7 @@ public class FluidInteractions
 
         // Check for applicable item use interaction config
         String key = consumedItem.getItem().getRegistryName().toString();
-        FIConfig.ItemUseInteractionConfig config = useConfigs.get(key);
+        CIIConfig.ItemUseInteractionConfig config = useConfigs.get(key);
 
         if (config != null)
         {
@@ -140,7 +140,7 @@ public class FluidInteractions
             }
 
             // Execute commands
-            ICommandSender commandSender = new FICommandSender(player, player.getPosition());
+            ICommandSender commandSender = new CIICommandSender(player, player.getPosition());
             for (String command : config.commands)
             {
                 if (!command.isEmpty())
@@ -157,7 +157,7 @@ public class FluidInteractions
         useConfigs.clear();
 
         // Load fluid interactions
-        for (String key : FIConfig.fluidInteractions)
+        for (String key : CIIConfig.fluidInteractions)
         {
             String[] parts = key.split(",");
             if (parts.length >= 3)
@@ -170,7 +170,7 @@ public class FluidInteractions
                 Fluid fluid = FluidRegistry.getFluid(fluidName);
                 if (fluid != null)
                 {
-                    fluidConfigs.put(fluidName + "_" + inputItem, new FIConfig.FluidInteractionConfig(fluid, inputItem, outputItem, commands));
+                    fluidConfigs.put(fluidName + "_" + inputItem, new CIIConfig.FluidInteractionConfig(fluid, inputItem, outputItem, commands));
                 }
                 else
                 {
@@ -181,7 +181,7 @@ public class FluidInteractions
         LOGGER.info("Loaded {} fluid interaction(s)", fluidConfigs.size());
 
         // Load item use interactions
-        for (String key : FIConfig.itemUseInteractions)
+        for (String key : CIIConfig.itemUseInteractions)
         {
             String[] parts = key.split(",");
             if (parts.length >= 2)
@@ -193,7 +193,7 @@ public class FluidInteractions
                 Item consumed = ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemConsumed));
                 if (consumed != null)
                 {
-                    useConfigs.put(itemConsumed, new FIConfig.ItemUseInteractionConfig(itemConsumed, itemReplacing, commands));
+                    useConfigs.put(itemConsumed, new CIIConfig.ItemUseInteractionConfig(itemConsumed, itemReplacing, commands));
                 }
                 else
                 {
@@ -241,7 +241,7 @@ public class FluidInteractions
         float sinYaw = (float) Math.sin(-yaw * 0.017453292F - (float) Math.PI);
         float cosPitch = (float) -Math.cos(-pitch * 0.017453292F);
         float sinPitch = (float) Math.sin(-pitch * 0.017453292F);
-        double range = FIConfig.interactionDistance;
+        double range = CIIConfig.interactionDistance;
         Vec3d end = start.add(sinYaw * cosPitch * range, sinPitch * range, cosYaw * cosPitch * range);
 
         return world.rayTraceBlocks(start, end, true, false, true);

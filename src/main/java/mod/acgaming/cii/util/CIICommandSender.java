@@ -1,4 +1,4 @@
-package mod.acgaming.fluidinteractions.util;
+package mod.acgaming.cii.util;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
@@ -8,12 +8,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class FICommandSender implements ICommandSender
+public class CIICommandSender implements ICommandSender
 {
     private final EntityPlayer player;
     private final BlockPos targetPos;
 
-    public FICommandSender(EntityPlayer player, BlockPos targetPos)
+    public CIICommandSender(EntityPlayer player, BlockPos targetPos)
     {
         this.player = player;
         this.targetPos = targetPos;

@@ -1,11 +1,11 @@
 [
   {
-    "modid": "fluidinteractions",
-    "name": "Fluid Interactions",
-    "description": "Solid functionality for liquid states!",
+    "modid": "cii",
+    "name": "Custom Item Interactions",
+    "description": "More interactive than ever!",
     "version": "${version}",
     "mcversion": "${mcversion}",
-    "url": "https://github.com/ACGaming/FluidInteractions",
+    "url": "https://github.com/ACGaming/CustomItemInteractions",
     "authorList": ["ACGaming"],
     "credits": "Ski_ for commissioning"
   }
