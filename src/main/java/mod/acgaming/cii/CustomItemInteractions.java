@@ -3,7 +3,6 @@ package mod.acgaming.cii;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
@@ -208,19 +207,6 @@ public class CustomItemInteractions
     {
         IBlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
-        Material material = state.getMaterial();
-
-        // Shortcut check for vanilla fluids
-        if (material == Material.WATER)
-        {
-            return FluidRegistry.WATER;
-        }
-        else if (material == Material.LAVA)
-        {
-            return FluidRegistry.LAVA;
-        }
-
-        // Check for modded fluids
         for (Fluid fluid : FluidRegistry.getRegisteredFluids().values())
         {
             if (fluid.getBlock() != null && block == fluid.getBlock())
