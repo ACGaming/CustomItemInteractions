@@ -86,7 +86,7 @@ public class CustomItemInteractions
             }
 
             // Execute commands
-            ICommandSender commandSender = new CIICommandSender(player, rayTrace.getBlockPos());
+            ICommandSender commandSender = new CIICommandSender(player, CIIConfig.interactionCommandPos.equals("PLAYER") ? player.getPosition() : rayTrace.getBlockPos());
             for (String command : config.commands)
             {
                 if (!command.isEmpty())

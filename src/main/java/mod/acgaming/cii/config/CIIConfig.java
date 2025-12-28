@@ -20,6 +20,10 @@ public class CIIConfig
         })
     public static String[] fluidInteractions = new String[] {};
 
+    @Config.Name("Fluid Interaction Command Position")
+    @Config.Comment({"The position from which commands are run when interacting with fluids", "Can either be PLAYER or BLOCK"})
+    public static String interactionCommandPos = "BLOCK";
+
     @Config.Name("Fluid Interaction Distance")
     @Config.Comment("The maximum distance in blocks a fluid can be interacted with")
     public static double interactionDistance = 5.0D;
