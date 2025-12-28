@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -85,6 +86,12 @@ public class CustomItemInteractions
                 }
             }
 
+            // Optionally consume fluid
+            if (config.consume)
+            {
+                event.getWorld().setBlockState(rayTrace.getBlockPos(), Blocks.AIR.getDefaultState());
+            }
+
             // Execute commands
             ICommandSender commandSender = new CIICommandSender(player, CIIConfig.interactionCommandPos.equals("PLAYER") ? player.getPosition() : rayTrace.getBlockPos());
             for (String command : config.commands)
@@ -159,17 +166,18 @@ public class CustomItemInteractions
         for (String key : CIIConfig.fluidInteractions)
         {
             String[] parts = key.split(",");
-            if (parts.length >= 3)
+            if (parts.length >= 4)
             {
                 String fluidName = parts[0].trim();
                 String inputItem = parts[1].trim();
                 String outputItem = parts[2].trim();
-                String[] commands = parts.length > 3 ? parts[3].split(";") : new String[0];
+                boolean consume = Boolean.parseBoolean(parts[3].trim());
+                String[] commands = parts.length > 4 ? parts[4].split(";") : new String[0];
 
                 Fluid fluid = FluidRegistry.getFluid(fluidName);
                 if (fluid != null)
                 {
-                    fluidConfigs.put(fluidName + "_" + inputItem, new CIIConfig.FluidInteractionConfig(fluid, inputItem, outputItem, commands));
+                    fluidConfigs.put(fluidName + "_" + inputItem, new CIIConfig.FluidInteractionConfig(fluid, inputItem, outputItem, consume, commands));
                 }
                 else
                 {

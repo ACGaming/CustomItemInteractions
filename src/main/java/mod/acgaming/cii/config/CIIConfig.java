@@ -15,8 +15,8 @@ public class CIIConfig
     @Config.Name("Fluid Interactions")
     @Config.Comment
         ({
-            "Syntax: fluid,input_item,output_item[,command1;command2;command3...]",
-            "Example: water,minecraft:book,minecraft:paper,playsound block.cloth.break player @p"
+            "Syntax: fluid,input_item,output_item,consume[,command1;command2;command3...]",
+            "Example: water,minecraft:book,minecraft:paper,false,playsound block.cloth.break player @p"
         })
     public static String[] fluidInteractions = new String[] {};
 
@@ -55,13 +55,15 @@ public class CIIConfig
         public Fluid fluid;
         public String inputItem;
         public String outputItem;
+        public boolean consume;
         public String[] commands;
 
-        public FluidInteractionConfig(Fluid fluid, String inputItem, String outputItem, String[] commands)
+        public FluidInteractionConfig(Fluid fluid, String inputItem, String outputItem, boolean consume, String[] commands)
         {
             this.fluid = fluid;
             this.inputItem = inputItem;
             this.outputItem = outputItem;
+            this.consume = consume;
             this.commands = commands;
         }
     }
